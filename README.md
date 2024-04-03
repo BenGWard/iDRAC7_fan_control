@@ -6,6 +6,14 @@ The tower servers T320, T420 & T620 inlet temperature sensor is after the HDDs s
 
 As you may have discovered, when you cross flash a Dell H310 raid controller to IT mode and as soon as the iDRAC detects that a drive has been inserted the fans spin up and get loud even when the ambient temperature is low, say 20deg  C. This is as designed by Dell, which sucks.
 
+## Ben Notes
+
+My fork removes the use of `-H -U -P`, thus no need to set the IP, user, or password.
+
+Be sure to enable "IPMI over LAN" in the BIOS setup.
+
+## Continuing ReadMe
+
 #### Directly from page 30 PowerEdge T320 Technical Guide
 
 *RAID Setup with PERC H310: A system configured as non-RAID has a higher noise level than a system configured as RAID. With non-RAID, the temperature of the hard disk drives is not monitored, which causes the fan speed to be higher to ensure sufficient cooling resulting in higher noise level*
