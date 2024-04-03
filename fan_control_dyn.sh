@@ -11,9 +11,9 @@ INITIAL_START_DELAY_SEC=60
 IPMITOOL=ipmitool
 
 TEMP_THRESHOLD=35
-TEMP_SENSOR="04h"   # Inlet Temp
+#TEMP_SENSOR="04h"   # Inlet Temp
 #TEMP_SENSOR="01h"  # Exhaust Temp
-#TEMP_SENSOR="0Eh"  # CPU 1 Temp
+TEMP_SENSOR="0Eh"  # CPU 1 Temp
 #TEMP_SENSOR="0Fh"  # CPU 2 Temp
 
 FCTRL=0 #disabled, enabled=1
