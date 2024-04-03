@@ -7,6 +7,9 @@ IDRAC_PASSWORD="passowrd"
 INTERVAL_SEC=5
 INITIAL_START_DELAY_SEC=60
 
+#IPMITOOL=ipmitool -I lanplus -H $IDRAC_IP -U $IDRAC_USER -P $IDRAC_PASSWORD
+IPMITOOL=ipmitool
+
 TEMP_THRESHOLD=35
 TEMP_SENSOR="04h"   # Inlet Temp
 #TEMP_SENSOR="01h"  # Exhaust Temp
@@ -18,7 +21,7 @@ LAST_PCT=0
 
 
 toggle() {
-    ipmitool -I lanplus -H $IDRAC_IP -U $IDRAC_USER -P $IDRAC_PASSWORD raw 0x30 0x30 0x01 $1 2>&1 >/dev/null
+    $IPMITOOL raw 0x30 0x30 0x01 $1 2>&1 >/dev/null
 }
 
 reset_manual() {
@@ -50,7 +53,7 @@ while [ 1 ]
 do
 
     # Get temperature from iDARC.
-    T=$(ipmitool -I lanplus -H $IDRAC_IP -U $IDRAC_USER -P $IDRAC_PASSWORD sdr type temperature 2>/dev/null | grep $TEMP_SENSOR | cut -d"|" -f5 | cut -d" " -f2)
+    T=$($IPMITOOL sdr type temperature 2>/dev/null | grep $TEMP_SENSOR | cut -d"|" -f5 | cut -d" " -f2)
 
     # If ambient temperature is above 35deg C enable dynamic control and exit, if below set manual control.
     if [[ $T -ge $TEMP_THRESHOLD ]]
@@ -74,7 +77,7 @@ do
                 set_manual
             fi
             PCTHEX=$(printf '0x%02x' $PCT)
-            ipmitool -I lanplus -H $IDRAC_IP -U $IDRAC_USER -P $IDRAC_PASSWORD raw 0x30 0x30 0x02 0xff $PCTHEX 2>&1 >/dev/null
+            $IPMITOOL raw 0x30 0x30 0x02 0xff $PCTHEX 2>&1 >/dev/null
             LAST_PCT=$PCT
         fi
     fi
