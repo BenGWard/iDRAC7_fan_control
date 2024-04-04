@@ -12,7 +12,7 @@ My fork removes the use of `-H -U -P`, thus no need to set the IP, user, or pass
 
 Be sure to enable "IPMI over LAN" in the BIOS setup.
 
-Be sure to customize `TEMP_THRESHOLD` in `fan_control_dyn.sh`.
+Be sure to customize `TEMP_THRESHOLD` & `MAX_MANUAL_FAN` in `fan_control_dyn.sh`.
 
 ## Continuing ReadMe
 
