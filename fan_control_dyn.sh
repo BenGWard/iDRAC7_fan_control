@@ -6,11 +6,12 @@ IDRAC_USER="user"
 IDRAC_PASSWORD="passowrd"
 INTERVAL_SEC=5
 INITIAL_START_DELAY_SEC=60
+MAX_MANUAL_FAN=40
 
 #IPMITOOL=ipmitool -I lanplus -H $IDRAC_IP -U $IDRAC_USER -P $IDRAC_PASSWORD
 IPMITOOL=ipmitool
 
-TEMP_THRESHOLD=35
+TEMP_THRESHOLD=65
 #TEMP_SENSOR="04h"   # Inlet Temp
 #TEMP_SENSOR="01h"  # Exhaust Temp
 TEMP_SENSOR="0Eh"  # CPU 1 Temp
@@ -25,11 +26,13 @@ toggle() {
 }
 
 reset_manual() {
+    echo "Setting Control To Automatic"
     toggle 0x01
     FCTRL=0 #disabled
 }
 
 set_manual() {
+    echo "Setting Control To Manual"
     toggle 0x00
     FCTRL=1 #enabled
 }
@@ -55,7 +58,7 @@ do
     # Get temperature from iDARC.
     T=$($IPMITOOL sdr type temperature 2>/dev/null | grep $TEMP_SENSOR | cut -d"|" -f5 | cut -d" " -f2)
 
-    # If ambient temperature is above 35deg C enable dynamic control and exit, if below set manual control.
+    # If temperature is above TEMP_THRESHOLD C enable dynamic control and exit, if below set manual control.
     if [[ $T -ge $TEMP_THRESHOLD ]]
     then
         if [[ $FCTRL -ne 0 ]]
@@ -64,14 +67,15 @@ do
         fi
     else
         
-        # This gives a Percent that is a multiple of 5 for ranges of 5 degC
-        PCT=$(( 5 * ( T / 5 ) ))
+        # This gives a fan percent that is a multiple of 5, up to MAX_MANUAL_FAN
+        PCT=$((((T * 20 * MAX_MANUAL_FAN) / (TEMP_THRESHOLD * 100) + 1) * 5))
         # Min PCT Allowed is 10
         PCT=$(( PCT < 10 ? 10 : PCT ))
         
-
         if [[ $LAST_PCT -ne $PCT ]]
         then
+            echo "Temp:" $T "- Fan %" $PCT
+            
             if [[ $FCTRL -eq 0 ]]
             then
                 set_manual
@@ -81,7 +85,6 @@ do
             LAST_PCT=$PCT
         fi
     fi
-
     
     sleep $INTERVAL_SEC
 done
