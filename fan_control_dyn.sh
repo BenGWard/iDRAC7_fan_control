@@ -74,12 +74,12 @@ do
         
         if [[ $LAST_PCT -ne $PCT ]]
         then
-            echo "Temp:" $T "- Fan %" $PCT
-            
             if [[ $FCTRL -eq 0 ]]
             then
                 set_manual
             fi
+
+            echo "Temp:" $T "- Fan %" $PCT
             PCTHEX=$(printf '0x%02x' $PCT)
             $IPMITOOL raw 0x30 0x30 0x02 0xff $PCTHEX 2>&1 >/dev/null
             LAST_PCT=$PCT
