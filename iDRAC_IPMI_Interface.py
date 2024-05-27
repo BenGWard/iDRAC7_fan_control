@@ -16,7 +16,7 @@ class IpmiInterface:
         if self.automaticMode:
             self.SetManual()
 
-        subprocess.run(["ipmitool", "raw", "0x30", "0x30", "0x02", "0xFF", hex(int(percentage))], stdout=subprocess.PIPE)
+        subprocess.run(["ipmitool", "raw", "0x30", "0x30", "0x02", "0xFF", hex(max(min(int(percentage), 100), 0))], stdout=subprocess.PIPE)
 
     def SetManual(self):
         self.logger.info("Setting to manual control.")
@@ -54,7 +54,6 @@ class IpmiInterface:
 
     def GetTemperatureTable(self):
         if (time.time_ns() - self.temperatureTableTime) > (STALE_DATA_TIMEOUT_SECONDS * 1000000000.0):
-            self.logger.debug("Polling new temperature table.")
             self.temperatureTable = subprocess.run(["ipmitool", "sdr", "type", "temperature"], stdout=subprocess.PIPE).stdout.decode()
             self.temperatureTableTime = time.time_ns()
         
